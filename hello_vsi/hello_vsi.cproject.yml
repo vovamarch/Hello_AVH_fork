@@ -71,10 +71,12 @@ project:
       files:
         - file: ./source/VSI/data_sensor/driver/sensor_drv.c
         - file: ./source/micro_sensor_lib/data_sensor_provider.c
+    - group: Board_IO
+      files:
+        - file: ./source/Board_IO/stdout_user.c
     - group: micro_logger
       files:
         - file: ./source/micro_logger/micro_logger.c
-        - file: ./source/micro_logger/stdout_USART.c
         - file: ./source/micro_logger/micro_logger.h
 #    - group: Gui
 #      for-context: .gui
