@@ -1,15 +1,14 @@
 project:
   packs:
+    - pack: ARM::Arm-2D@1.1.0
+      for-context: .gui
     - pack: ARM::CMSIS@5.9.0
-    - pack: ARM::CMSIS-Compiler
-    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.4.0
-      for-context: +Corstone_300
-    - pack: ARM::V2M_MPS3_SSE_310_BSP@1.3.0
+    - pack: ARM::DMA350@1.0.0
+    - pack: Keil::ARM_Compiler@1.7.2
+    - pack: ARM::V2M_MPS3_SSE_310_BSP@1.1.0
       for-context: +Corstone_310
-#    - pack: ARM::DMA350@1.0.0
-#      for-context: .gui
-#    - pack: ARM::Arm-2D@1.1.0
-#      for-context: .gui
+    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.3.0
+      for-context: +Corstone_300
 
   processor:
     trustzone: off
@@ -23,40 +22,26 @@ project:
     - ./source/VSI/data_sensor/include
     - ./source/VSI/include
     - ./source/micro_sensor_lib
-#    - ./source/gui
+    - ./source/application/gui
 
   setups:
-    - setup: Corstone_300_AC6
+    - setup: Corstone_300 AC6
       for-context: +Corstone_300
       for-compiler: AC6
       linker:
-        - script: ./RTE/Device/SSE-300-MPS3/linker_SSE300MPS3_secure.sct
-    - setup: Corstone_300_GCC
-      for-context: +Corstone_300
-      for-compiler: GCC
-      optimize: balanced
-      linker:
-        - regions: ./RTE/Device/SSE-300-MPS3/region_defs.h
-        - script: ./RTE/Device/SSE-300-MPS3/linker_SSE300MPS3_secure.ld
-    - setup: Corstone_310_AC6
+        - script: ./RTE/Device/SSE-300-MPS3/fvp_sse300_mps3_s.sct
+    - setup: Corstone_310 AC6
       for-context: +Corstone_310
       for-compiler: AC6
       linker:
-        - script: ./RTE/Device/SSE-310-MPS3_FVP/linker_SSE310MPS3_secure.sct
-    - setup: Corstone_310_GCC
-      for-context: +Corstone_310
-      for-compiler: GCC
-      linker:
-        - regions: ./RTE/Device/SSE-310-MPS3_FVP/region_defs.h
-        - script: ./RTE/Device/SSE-310-MPS3_FVP/linker_SSE310MPS3_secure.ld
-
-#    - setup: gui
-#      for-context: .gui
-#      add-path:
-#       - ./source/arm2d/examples/common/platform
-#       - ./source/arm2d/examples/common/platform/lib
-#       - ./source/arm2d/examples/common/platform/mps3
-#       - ./source/arm2d/examples/common/platform/mps3/v2m_mps3
+        - script: ./RTE/Device/SSE-310-MPS3/corstone310_mps3_s.sct
+    - setup: gui
+      for-context: .gui
+      add-path:
+       - ./source/arm2d/examples/common/platform
+       - ./source/arm2d/examples/common/platform/lib
+       - ./source/arm2d/examples/common/platform/mps3
+       - ./source/arm2d/examples/common/platform/mps3/v2m_mps3
 
   groups:
     - group: App
@@ -65,68 +50,80 @@ project:
         - file: ./source/application/main.c
         - file: ./source/application/app.h
         - file: ./source/application/app.c
+    - group: Utils
+      files:
         - file: ./source/application/util.c
         - file: ./source/application/app_cfg.h
+    - group: Board IO
+      files:
+        - file: ./source/Board_IO/retarget_stdio.c
     - group: Driver
       files:
         - file: ./source/VSI/data_sensor/driver/sensor_drv.c
         - file: ./source/micro_sensor_lib/data_sensor_provider.c
-    - group: Board_IO
-      files:
-        - file: ./source/Board_IO/stdout_user.c
     - group: micro_logger
       files:
         - file: ./source/micro_logger/micro_logger.c
         - file: ./source/micro_logger/micro_logger.h
-#    - group: Gui
-#      for-context: .gui
-#      files:
-#        - file: ./source/gui/example_gui.c
-#        - file: ./source/gui/example_gui.h
-#        - file: ./source/gui/gui.c
-#        - file: ./source/gui/gui.h
-#        - file: ./source/gui/draw_line.c
-#        - file: ./source/gui/draw_line.h
-#        - file: ./source/arm2d/examples/common/asset/background.c
-#    - group: platform
-#      for-context: .gui
-#      files:
-#        - file: ./source/arm2d/examples/common/platform/app_platform.c
-#        - file: ./source/arm2d/examples/common/platform/platform.h
-#        - file: ./source/arm2d/examples/common/platform/lib/perf_counter.lib
-#        - file: ./source/arm2d/examples/common/platform/lib/perf_os_patch_rtx5.c
-#    - group: bsp_mps3
-#      for-context: .gui
-#      files:
-#        - file: ./source/arm2d/examples/common/platform/mps3/GLCD_V2M-MPS3_AN540.c
-#        - file: ./source/arm2d/examples/common/platform/mps3/platform_mps3.c
-#        - file: ./source/arm2d/examples/common/platform/mps3/stdout_USART.c
+    - group: Gui
+      for-context: .gui
+      files:
+        - file: ./source/application/gui/example_gui.c
+        - file: ./source/application/gui/example_gui.h
+        - file: ./source/application/gui/gui.c
+        - file: ./source/application/gui/gui.h
+        - file: ./source/application/gui/draw_line.c
+        - file: ./source/application/gui/draw_line.h
+        - file: ./source/arm2d/examples/common/asset/background.c
+    - group: platform
+      for-context: .gui
+      files:
+        - file: ./source/arm2d/examples/common/platform/app_platform.c
+        - file: ./source/arm2d/examples/common/platform/platform.h
+        - file: ./source/arm2d/examples/common/platform/lib/perf_counter.lib
+        - file: ./source/arm2d/examples/common/platform/lib/perf_os_patch_rtx5.c
+    - group: bsp_mps3
+      for-context: .gui
+      files:
+        - file: ./source/arm2d/examples/common/platform/mps3/GLCD_V2M-MPS3_AN540.c
+        - file: ./source/arm2d/examples/common/platform/mps3/platform_mps3.c
+        - file: ./source/arm2d/examples/common/platform/mps3/stdout_USART.c
 
   components:
     - component: ARM::CMSIS:CORE
+    - component: ARM::CMSIS Driver:MPC
+    - component: ARM::CMSIS Driver:PPC
+    - component: ARM::CMSIS Driver:SPI
     - component: ARM::CMSIS Driver:USART
-    - component: ARM::CMSIS-Compiler:CORE
-    - component: ARM::CMSIS-Compiler:STDOUT:Custom
+    - component: ARM::CMSIS:DSP&Source
+      for-context: .gui
     - component: ARM::CMSIS:RTOS2:Keil RTX5&Source
     - component: ARM::Device:Definition
-    - component: ARM::Device:Native Driver:SysCounter
-    - component: ARM::Device:Native Driver:SysTimer
-    - component: ARM::Device:Native Driver:Timeout
-    - component: ARM::Device:Native Driver:UART
-    - component: ARM::Device:Startup&C Startup
-#    - component: ARM::Native Driver:DMA350 Remap:SSE-310 Remap
-#      for-context: .gui+Corstone_310
-#    - component: ARM::CMSIS:DSP&Source
-#      for-context: .gui
-#    - component: ARM::Acceleration:Arm-2D Extras:Controls
-#      for-context: .gui
-#    - component: ARM::Acceleration:Arm-2D Extras:LCD ASCII Printf
-#      for-context: .gui
-#    - component: ARM::Acceleration:Arm-2D Helper:PFB
-#      for-context: .gui
-#    - component: ARM::Acceleration:Arm-2D:Alpha-Blending
-#      for-context: .gui
-#    - component: ARM::Acceleration:Arm-2D:Core
-#      for-context: .gui
-#    - component: ARM::Acceleration:Arm-2D:Transform
-#      for-context: .gui
+    - component: ARM::Device:Startup&Baremetal
+    - component: ARM::Native Driver:GPIO
+    - component: ARM::Native Driver:IO
+    - component: ARM::Native Driver:MPC
+    - component: ARM::Native Driver:PPC
+    - component: ARM::Native Driver:SPI
+    - component: ARM::Native Driver:SysCounter
+    - component: ARM::Native Driver:SysTimer
+    - component: ARM::Native Driver:Timeout
+    - component: ARM::Native Driver:UART
+    - component: ARM::Native Driver:Watch Dog
+    - component: Keil::Compiler&ARM Compiler:I/O:STDOUT&User
+    - component: ARM::Native Driver:DMA350
+      for-context: +Corstone_310
+    - component: ARM::Native Driver:DMA350 Remap:SSE-310 Remap
+      for-context: +Corstone_310
+    - component: ARM::Acceleration:Arm-2D Extras:Controls
+      for-context: .gui
+    - component: ARM::Acceleration:Arm-2D Extras:LCD ASCII Printf
+      for-context: .gui
+    - component: ARM::Acceleration:Arm-2D Helper:PFB
+      for-context: .gui
+    - component: ARM::Acceleration:Arm-2D:Alpha-Blending
+      for-context: .gui
+    - component: ARM::Acceleration:Arm-2D:Core
+      for-context: .gui
+    - component: ARM::Acceleration:Arm-2D:Transform
+      for-context: .gui

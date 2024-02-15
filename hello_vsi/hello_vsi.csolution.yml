@@ -7,6 +7,7 @@ solution:
   build-types:
     - type: event
       define:
+      - __ARM_FP: 0xe
       - __FVP_PY
       - __EVENT_DRIVEN
 
@@ -21,22 +22,22 @@ solution:
       - __FVP_PY
       - __GATED_FETCH
 
-#    - type: gui
-#      define:
-#      - __ARM_FP: 0xe
-#      - __FVP_PY
-#      - __EVENT_DRIVEN
-#      - __USE_GUI
-#      - GLCD_MIRROR_Y: 0
-#      - LCD_MIRROR_X: 1
-#      - __USE_AN547__
+    - type: gui
+      define:
+      - __ARM_FP: 0xe
+      - __FVP_PY
+      - __EVENT_DRIVEN
+      - __USE_GUI
+      - GLCD_MIRROR_Y: 0
+      - LCD_MIRROR_X: 1
+      - __USE_AN547__
 
   target-types:
     - type: Corstone_300
       device: SSE-300-MPS3
 
     - type: Corstone_310
-      device: SSE-310-MPS3_FVP
+      device: SSE-310-MPS3
 
   projects:
       - project: ./hello_vsi.cproject.yml

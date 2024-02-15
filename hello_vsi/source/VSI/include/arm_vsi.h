@@ -1,24 +1,12 @@
 /*
  * Copyright (c) 2021 Arm Limited. All rights reserved.
- *
- * SPDX-License-Identifier: Apache-2.0
- *
- * Licensed under the Apache License, Version 2.0 (the License); you may
- * not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an AS IS BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 
 /*
  * Virtual Streaming Interface (VSI)
  */
+
+
 
 #ifndef __ARM_VSI_H
 #define __ARM_VSI_H
@@ -50,34 +38,33 @@ extern "C" {
 #define ARM_VSI6_IRQn   230
 #define ARM_VSI7_IRQn   231
 
-/// Structure type to access the virtual streaming interface
+/**
+  \brief  Structure type to access the virtual streaming interface.
+ */
 typedef struct
 {
-  /// Interrupt Request (IRQ)
   struct {
-    __IOM uint32_t Enable;      /*!< (R/W) IRQ Enable */
-    __OM  uint32_t Set;         /*!< (-/W) IRQ Set */
-    __OM  uint32_t Clear;       /*!< (-/W) IRQ Clear */
-    __IM  uint32_t Status;      /*!< (R/-) IRQ Status */
-  } IRQ;
+    __IOM uint32_t Enable;      /*!< Offset: 0x0000 (R/W) IRQ Enable */
+    __OM  uint32_t Set;         /*!< Offset: 0x0004 (-/W) IRQ Set */
+    __OM  uint32_t Clear;       /*!< Offset: 0x0008 (-/W) IRQ Clear */
+    __IM  uint32_t Status;      /*!< Offset: 0x000C (R/-) IRQ Status */
+  } IRQ;                        /*!< Interrupt Request (IRQ) */
   uint32_t reserved1[60];
-  /// Time counter with 1MHz input frequency
   struct {
-    __IOM uint32_t Control;     /*!< (R/W) Timer Control */
-    __IOM uint32_t Interval;    /*!< (R/W) Timer Interval Value (in microseconds) */
-    __IM  uint32_t Count;       /*!< (R/-) Timer Overflow Count */
-  } Timer;
+    __IOM uint32_t Control;     /*!< Offset: 0x0100 (R/W) Timer Control */
+    __IOM uint32_t Interval;    /*!< Offset: 0x0104 (R/W) Timer Interval Value (in microseconds) */
+    __IM  uint32_t Count;       /*!< Offset: 0x0108 (R/-) Timer Overflow Count */
+  } Timer;                      /*!< Time counter with 1MHz input frequency */
   uint32_t reserved2[61];
-  /// Direct Memory Access (DMA) Controller
   struct {
-    __IOM uint32_t Control;     /*!< (R/W) DMA Control */
-    __IOM uint32_t Address;     /*!< (R/W) DMA Memory Start Address */
-    __IOM uint32_t BlockSize;   /*!< (R/W) DMA Block Size (in bytes, multiple of 4) */
-    __IOM uint32_t BlockNum;    /*!< (R/W) DMA Number of Blocks (must be 2^n) */
-    __IM  uint32_t BlockIndex;  /*!< (R/-) DMA Block Index */
-  } DMA;
+    __IOM uint32_t Control;     /*!< Offset: 0x0200 (R/W) DMA Control */
+    __IOM uint32_t Address;     /*!< Offset: 0x0204 (R/W) DMA Memory Start Address */
+    __IOM uint32_t BlockSize;   /*!< Offset: 0x0208 (R/W) DMA Block Size (in bytes, multiple of 4) */
+    __IOM uint32_t BlockNum;    /*!< Offset: 0x020C (R/W) DMA Number of Blocks (must be 2^n) */
+    __IM  uint32_t BlockIndex;  /*!< Offset: 0x0210 (R/-) DMA Block Index */
+  } DMA;                        /*!< Direct Memory Access (DMA) Controller */
   uint32_t reserved3[59];
-  __IOM uint32_t Regs[64];      /*!< (R/W) User Registers */
+  __IOM uint32_t Regs[64];      /*!< Offset: 0x0300 (R/W) User Registers */
 } ARM_VSI_Type;
 
 /* VSI Timer Control Definitions for Timer.Control register */

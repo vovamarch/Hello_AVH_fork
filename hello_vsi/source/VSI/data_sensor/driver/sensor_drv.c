@@ -63,11 +63,11 @@ int32_t SensorDrv_Initialize (SensorDrv_Event_t cb_event) {
   CB_Event = cb_event;
 
   /* Initialize Sensor Output peripheral */
-  SensorO->Timer.Control = 0U;
-  SensorO->DMA.Control   = 0U;
-  SensorO->IRQ.Clear     = 0x00000001U;
-  SensorO->IRQ.Enable    = 0x00000001U;
-  SensorO->CONTROL       = 0U;
+//  SensorO->Timer.Control = 0U;
+//  SensorO->DMA.Control   = 0U;
+//  SensorO->IRQ.Clear     = 0x00000001U;
+//  SensorO->IRQ.Enable    = 0x00000001U;
+//  SensorO->CONTROL       = 0U;
 
   /* Initialize Sensor Input peripheral */
   SensorI->Timer.Control = 0U;
@@ -78,7 +78,8 @@ int32_t SensorDrv_Initialize (SensorDrv_Event_t cb_event) {
 
   /* Enable peripheral interrupts */
 //NVIC_EnableIRQ(SensorO_IRQn);
-  NVIC->ISER[(((uint32_t)SensorO_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)SensorO_IRQn) & 0x1FUL));
+//  NVIC->ISER[(((uint32_t)SensorO_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)SensorO_IRQn) & 0x1FUL));
+	
 //NVIC_EnableIRQ(SensorI_IRQn);
   NVIC->ISER[(((uint32_t)SensorI_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)SensorI_IRQn) & 0x1FUL));
   __DSB();
@@ -94,18 +95,18 @@ int32_t SensorDrv_Uninitialize (void) {
 
   /* Disable peripheral interrupts */
 //NVIC_DisableIRQ(SensorO_IRQn);
-  NVIC->ICER[(((uint32_t)SensorO_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)SensorO_IRQn) & 0x1FUL));
+//  NVIC->ICER[(((uint32_t)SensorO_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)SensorO_IRQn) & 0x1FUL));
 //NVIC_DisableIRQ(SensorI_IRQn);
   NVIC->ICER[(((uint32_t)SensorI_IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)SensorI_IRQn) & 0x1FUL));
   __DSB();
   __ISB();
 
   /* De-initialize Sensor Output peripheral */
-  SensorO->Timer.Control = 0U;
-  SensorO->DMA.Control   = 0U;
-  SensorO->IRQ.Clear     = 0x00000001U;
-  SensorO->IRQ.Enable    = 0x00000000U;
-  SensorO->CONTROL       = 0U;
+//  SensorO->Timer.Control = 0U;
+//  SensorO->DMA.Control   = 0U;
+//  SensorO->IRQ.Clear     = 0x00000001U;
+//  SensorO->IRQ.Enable    = 0x00000000U;
+//  SensorO->CONTROL       = 0U;
 
   /* De-initialize Sensor Input peripheral */
   SensorI->Timer.Control = 0U;
@@ -137,13 +138,13 @@ int32_t SensorDrv_Configure (uint32_t interface, uint32_t channels, uint32_t sam
 
   switch (interface) {
     case SENSOR_DRV_INTERFACE_TX:
-      if ((SensorO->CONTROL & CONTROL_ENABLE_Msk) != 0U) {
+      //if ((SensorO->CONTROL & CONTROL_ENABLE_Msk) != 0U) {
         return SENSOR_DRV_ERROR;
-      }
-      SensorO->CHANNELS    = channels;
-      SensorO->SAMPLE_BITS = sample_bits;
-      SensorO->SAMPLE_RATE = sample_rate;
-      break;
+      //}
+      //SensorO->CHANNELS    = channels;
+      //SensorO->SAMPLE_BITS = sample_bits;
+      //SensorO->SAMPLE_RATE = sample_rate;
+      //break;
     case SENSOR_DRV_INTERFACE_RX:
       if ((SensorI->CONTROL & CONTROL_ENABLE_Msk) != 0U) {
         return SENSOR_DRV_ERROR;
@@ -168,13 +169,13 @@ int32_t SensorDrv_SetBuf (uint32_t interface, void *buf, uint32_t block_num, uin
 
   switch (interface) {
     case SENSOR_DRV_INTERFACE_TX:
-      if ((SensorO->DMA.Control & ARM_VSI_DMA_Enable_Msk) != 0U) {
+      //if ((SensorO->DMA.Control & ARM_VSI_DMA_Enable_Msk) != 0U) {
         return SENSOR_DRV_ERROR;
-      }
-      SensorO->DMA.Address   = (uint32_t)buf;
-      SensorO->DMA.BlockNum  = block_num;
-      SensorO->DMA.BlockSize = block_size;
-      break;
+      //}
+      //SensorO->DMA.Address   = (uint32_t)buf;
+      //SensorO->DMA.BlockNum  = block_num;
+      //SensorO->DMA.BlockSize = block_size;
+     // break;
     case SENSOR_DRV_INTERFACE_RX:
       if ((SensorI->DMA.Control & ARM_VSI_DMA_Enable_Msk) != 0U) {
         return SENSOR_DRV_ERROR;
@@ -200,27 +201,27 @@ int32_t SensorDrv_Control (uint32_t control) {
     return SENSOR_DRV_ERROR;
   }
 
-  if ((control & SENSOR_DRV_CONTROL_TX_DISABLE) != 0U) {
-    SensorO->Timer.Control = 0U;
-    SensorO->DMA.Control   = 0U;
-    SensorO->CONTROL       = 0U;
-  } else if ((control & SENSOR_DRV_CONTROL_TX_ENABLE) != 0U) {
-    SensorO->CONTROL       = CONTROL_ENABLE_Msk;
-    SensorO->DMA.Control   = ARM_VSI_DMA_Direction_M2P |
-                            ARM_VSI_DMA_Enable_Msk;
-    sample_size = SensorO->CHANNELS * ((SensorO->SAMPLE_BITS + 7U) / 8U);
-    sample_rate = SensorO->SAMPLE_RATE;
-    if ((sample_size == 0U) || (sample_rate == 0U)) {
-      SensorO->Timer.Interval = 0xFFFFFFFFU;
-    } else {
-      block_size = SensorO->DMA.BlockSize;
-      SensorO->Timer.Interval = (1000000U * (block_size / sample_size)) / sample_rate;
-    }
-    SensorO->Timer.Control = ARM_VSI_Timer_Trig_DMA_Msk |
-                            ARM_VSI_Timer_Trig_IRQ_Msk |
-                            ARM_VSI_Timer_Periodic_Msk |
-                            ARM_VSI_Timer_Run_Msk;
-  }
+//  if ((control & SENSOR_DRV_CONTROL_TX_DISABLE) != 0U) {
+  //  SensorO->Timer.Control = 0U;
+   // SensorO->DMA.Control   = 0U;
+//    SensorO->CONTROL       = 0U;
+  //} else if ((control & SENSOR_DRV_CONTROL_TX_ENABLE) != 0U) {
+  //  SensorO->CONTROL       = CONTROL_ENABLE_Msk;
+//    SensorO->DMA.Control   = ARM_VSI_DMA_Direction_M2P |
+//                            ARM_VSI_DMA_Enable_Msk;
+//    sample_size = SensorO->CHANNELS * ((SensorO->SAMPLE_BITS + 7U) / 8U);
+//    sample_rate = SensorO->SAMPLE_RATE;
+//    if ((sample_size == 0U) || (sample_rate == 0U)) {
+//      SensorO->Timer.Interval = 0xFFFFFFFFU;
+//    } else {
+//      block_size = SensorO->DMA.BlockSize;
+//      SensorO->Timer.Interval = (1000000U * (block_size / sample_size)) / sample_rate;
+//    }
+//    SensorO->Timer.Control = ARM_VSI_Timer_Trig_DMA_Msk |
+//                            ARM_VSI_Timer_Trig_IRQ_Msk |
+//                            ARM_VSI_Timer_Periodic_Msk |
+//                            ARM_VSI_Timer_Run_Msk;
+//  }
 
   if ((control & SENSOR_DRV_CONTROL_RX_DISABLE) != 0U) {
     SensorI->Timer.Control = 0U;
@@ -255,7 +256,8 @@ int32_t SensorDrv_Control (uint32_t control) {
 
 /* Get transmitted block count */
 uint32_t SensorDrv_GetTxCount (void) {
-  return (SensorO->Timer.Count);
+//  return (SensorO->Timer.Count);
+  return 0;	
 }
 
 /* Get received block count */
@@ -268,11 +270,11 @@ SensorDrv_Status_t SensorDrv_GetStatus (void) {
   SensorDrv_Status_t status;
   uint32_t sr;
 
-  if ((SensorO->CONTROL & CONTROL_ENABLE_Msk) != 0U) {
-    status.tx_active = 1U;
-  } else {
+//  if ((SensorO->CONTROL & CONTROL_ENABLE_Msk) != 0U) {
+//    status.tx_active = 1U;
+  //} else {
     status.tx_active = 0U;
-  }
+//  }
 
   if ((SensorI->CONTROL & CONTROL_ENABLE_Msk) != 0U) {
     status.rx_active = 1U;

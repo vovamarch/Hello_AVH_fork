@@ -17,6 +17,7 @@ limitations under the License.
 #include <string.h>
 
 #include "app_cfg.h"
+#include "micro_logger.h"
 #include "data_sensor_provider.h"
 #include "sensor_drv.h"
 #include "cmsis_os2.h"
@@ -41,13 +42,16 @@ void sensor_rx_event(void);
 
 static void sensor_event(uint32_t event)
 {
+	  log_debug("sensor_event");
     if (!is_sensor_ready)
     {
+	      log_debug("if (!is_sensor_ready)");
         is_sensor_ready = 1;
         return;
     }
     if (event & SENSOR_DRV_EVENT_RX_DATA)
     {
+	      log_debug("if (event & SENSOR_DRV_EVENT_RX_DATA)");
         current_data_count += (SENSOR_BLOCK_SIZE);
 #ifdef __EVENT_DRIVEN
         sensor_rx_event();
@@ -102,11 +106,14 @@ static int32_t sensor_driver_setup(void)
 // TODO: we might need a timeout, if no data is retrieved before timeout, return an error code
 uint32_t get_sensor_data(uint32_t num_data, uint32_t *sensor_data_size, DATA_TYPE **sensor_data)
 {
+		log_debug("get_sensor_data");
     if (!is_sensor_initialized)
     {
+		    log_debug("if (!is_sensor_initialized)");
         int32_t ret = sensor_driver_setup();
         if (ret != 0)
         {
+		        log_debug("if (ret != 0)");
             return 1;
         }
         is_sensor_initialized = 1;
@@ -119,6 +126,7 @@ uint32_t get_sensor_data(uint32_t num_data, uint32_t *sensor_data_size, DATA_TYP
 
     while(current_data_count <= previous_data_count)
     {
+		    log_debug("while(current_data_count <= previous_data_count)");
         osDelay(10U);
     }
 #ifdef __GATED_FETCH

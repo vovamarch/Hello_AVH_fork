@@ -25,7 +25,7 @@
 
 #include "app.h"
 
-extern void stdout_init(void);
+extern void stdio_init(void);
 
 #ifdef __USE_GUI
 
@@ -49,8 +49,8 @@ int main(void)
     // System Initialization
     SystemCoreClockUpdate();
     
-    // Initialize STDOUT
-    stdout_init();
+    // Initialize STDIO
+    stdio_init();
 
 #if defined(RTE_Compiler_EventRecorder) && \
     (defined(__MICROLIB) ||                \
